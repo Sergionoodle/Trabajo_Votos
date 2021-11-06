@@ -16,7 +16,7 @@ $datosPartidos = json_decode(file_get_contents($api_url3), true);
 
 $provincias[] = array();
 
-//Creamos los objetos con la array de los datos de las provincias
+//Creamos los objetos con la array de provincias
 function objetoProvincias($datosProvincias){
     for ($i = 0; $i < count($datosProvincias); $i++){
         $provincias[$i] = new provincia($datosProvincias[$i]['id'], $datosProvincias[$i]['name'], $datosProvincias[$i]['delegates']);
@@ -25,9 +25,8 @@ function objetoProvincias($datosProvincias){
 }
 
 $circuns[] = array();
-//pasamos la array de los partidos a objetos
 
-//creacion de objeto de la array de resultado
+//Creamos los objetos de la array de resultados
 function objetosResultados($datosResultados){
 
     for ($i = 0; $i < count($datosResultados); $i++){
@@ -39,7 +38,7 @@ function objetosResultados($datosResultados){
 }
 $partido[] = array();
 
-//Creacion de objeto de la array partidos
+//Creamos los objetos de la array partidos
 function objetoPartidos($datosPartidos){
 
     for ($i = 0; $i < count($datosPartidos); $i++){
@@ -53,7 +52,7 @@ $partidosOb = objetoPartidos($datosPartidos);
 $resultadosOb = objetosResultados($datosResultados);
 $provinOb = objetoProvincias($datosProvincias);
 
-//filtramos partidos
+//filtramos por partidos
 function filtroPartidos($nombrePartido){
     global  $partidosOb;
     $datosFiltro[] = Array();
@@ -67,7 +66,7 @@ function filtroPartidos($nombrePartido){
     return $datosFiltro;
 }
 
-//calculo de escaños
+//Calculamos los escaños
 function calculoEscanos($nomProvin, $delegados){
     $datosFiltro[] = Array();
     $contador = 0;
@@ -99,7 +98,7 @@ function calculoEscanos($nomProvin, $delegados){
 
 }
 
-//funcion a ejecutar
+//Funcion a ejecutar para hacer los escaños
 function hacerEscanos($provinOb){
 
     for ($i = 0; $i < count($provinOb); $i++){
@@ -111,6 +110,7 @@ function hacerEscanos($provinOb){
 
 hacerEscanos($provinOb);
 
+//Mapeamos para conseguir los totales de Votos y escaños
 function mapeo(){
 
     global $partidosOb;
@@ -160,23 +160,25 @@ mapeo();
 <body>
 <form action="main.php" method="post">
     <?php
-
+//Primer formulario donde podemos elegir lo que queremos ver
     echo '<select name="porOrdenar">';
     echo '<option value="ordenProvincias">Ordenar por Provincias</option>';
     echo '<option value="ordenParty">Ordenar por Partidos</option>';
     echo '<option value="generalOrder">General</option>';
     echo '</select>';
 
+//No consegui hacer que se quedase con lo que escogias
     echo '<input type="submit" value="Elección">';
-    echo "Recuerda seleccionar esta casilla en cada busqueda ;)";
+    echo "Recuerda seleccionar esta casilla en cada busqueda.";
 
     if(isset($_POST['porOrdenar'])){
         $sort = strval($_POST['porOrdenar']);
     }
 
+//Condicion para cuando escojas ordenar por provincias
     if($sort == 'ordenProvincias') {
 
-        //-------------formulario de ordenaçao x provincia-----------------
+//Formulario de la tabla de provincias
 
         echo '<br>';
         echo '<select name="sorting">';
@@ -207,11 +209,13 @@ mapeo();
         }
         echo '</tbody>';
         echo '</table>';
+
+//Condicion para cuando escojas ordenar por partido
     }elseif ($sort == 'ordenParty') {
 
         echo '<br>';
 
-//FORMULARIO DE ORDENAR POR PARTIDOS
+//Formulario de ordenar por partido
         echo '<select name="sortPartidos">';
         for ($i = 0; $i < count($partidosOb); $i++) {
             echo '<option value="' . $partidosOb[$i]->getNombre() . '">' . $partidosOb[$i]->getNombre() . '</option>';
@@ -223,7 +227,7 @@ mapeo();
         echo '    <input type="submit" value="partidos">';
 
 
-//RESULTADO ORDENAR PARTIDOS
+//Resultado de ordenar por partido
         $filtroParty = filtroPartidos($sortbyP);
         echo '<table>';
         echo '<tbody>';
@@ -246,7 +250,11 @@ mapeo();
 
         echo '</tbody>';
         echo '</table>';
+
+//Condicion si escojes la opcion de general
     }elseif($sort == 'generalOrder') {
+
+//Resultado de ordenar por general
         echo '<br>';
         echo '<table>';
         echo '<tbody>';
