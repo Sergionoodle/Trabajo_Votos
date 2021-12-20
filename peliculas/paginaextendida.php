@@ -4,6 +4,7 @@ include_once "multimedia.php";
 include_once "sql.php";
 include_once "staff.php";
 include_once "principal.php";
+include_once "comentarios.php";
 
 $sql = new sql();
 
@@ -12,7 +13,9 @@ if(isset($_GET['id'])){
     $resultadoStaff = $sql->getStaff($_GET['id']);
     $resultadoPrincipal = $sql->getIdPrincipal($_GET['id']);
     $fotos = $sql->getprincipal();
+
 }
+
 
 
 ?>
@@ -50,7 +53,7 @@ if(isset($_GET['id'])){
             padding-top: 5px;
         }
         .cuerpo{
-           text-align: center;
+            text-align: center;
             margin-top: 320px;
         }
         img{
@@ -160,13 +163,49 @@ if(isset($_GET['id'])){
 
 
         }
+        .div_comentarios{
+            width: 600px;
+            height: 500px;
+            background-color: #793e98;
+            margin-top: 20px;
+            margin-left: 20px;
+            margin-bottom: 20px;
+            border: black 2px solid;
+        }
+
+        .h1_comentario{
+            text-align: center;
+        }
+        .comentario_txt{
+            margin-left: 14px;
+            resize: none;
+            width: 500px;
+        }
+        .comentarios{
+            margin-top: -15px;
+            margin-left: 2px;
+
+        }
+        ul.com{
+            border: black solid 1px;
+        }
+
 
 
     </style>
 </head>
 <body>
 <div class="container">
-    <h1 class="texto"><a href="main.php">Ifinity Movies Dont Be Moved<img class="flecha" src="https://img.icons8.com/office/100/000000/u-turn-to-left.png"/></a></h1>
+    <h1 class="texto"><a href="main.php"><?php
+            session_start();//Entramos en la sesion
+            if($_SESSION['logeado']){
+                echo "Estas Logeado//";
+            }else{
+                echo "NO estas Logeado//";
+            }
+            //Conseguimos el id
+            $_SESSION['id_pelicula'] = $resultado->getId();
+            ?>Ifinity Movies Dont Be Moved<img class="flecha" src="https://img.icons8.com/office/100/000000/u-turn-to-left.png"/></a></h1>
 </div>
 <div class="foto">
     <img class="card-img-top" src="<?php echo $resultado->getUrl() ?>">
@@ -176,11 +215,11 @@ if(isset($_GET['id'])){
     <p class="genero"><span>Genero :</span><?php echo $resultadoPrincipal->getGenero() ?></p>
     <p class="director"><span>Director: </span><?php echo $resultadoStaff->getDirector()?><span> &nbsp; &nbsp;&nbsp; Actor Principal: </span><?php echo $resultadoStaff->getProta() ?></p>
     <div class="puntuacion"><?php for($i = 0; $i < $resultadoPrincipal->getPuntuacion(); $i++){
-        if($resultadoPrincipal->getPuntuacion() <= 5){
-            echo '<img class="estrellita" src="img/rojo.png">';
-        }else {
-            echo '<img class="estrellita" src="img/pngegg.png">';
-        }
+            if($resultadoPrincipal->getPuntuacion() <= 5){
+                echo '<img class="estrellita" src="img/rojo.png">';
+            }else {
+                echo '<img class="estrellita" src="img/pngegg.png">';
+            }
         }?></div>
     <p class="descripcion"><span>Descripcion: </span><br><br><?php echo $resultadoPrincipal->getDescripcion()?></p>
 </div>
@@ -192,11 +231,48 @@ if(isset($_GET['id'])){
     <div class="slider" id="slider">
         <ul class="slider-controler">
             <?php foreach ($fotos as $foto){ ?>
-            <li><a href="paginaextendida.php?id=<?php echo $foto->getId()?>"><img class="decision" src="<?php echo $foto->getIdMultimedia()->getUrl(); ?>">'</a></li>
+                <li><a href="paginaextendida.php?id=<?php echo $foto->getId()?>"><img class="decision" src="<?php echo $foto->getIdMultimedia()->getUrl(); ?>">'</a></li>
             <?php } ?>
         </ul>
     </div>
 </div>
+<?php if($_SESSION['logeado']){
 
+
+    ?>
+    <div class="div_comentarios">
+        <h1 class="h1_comentario">COMENTARIOS</h1>
+        <form name="formulario_texto" action="comentario_exitoso.php" method="post">
+            <textarea class="comentario_txt" name="comentario" id="comentario" cols="77" rows="1"></textarea>
+            <input type="submit" name="comentar" value="Comenta">
+        </form>
+        <li class="comentarios">
+            <?php
+
+            $imprimirComentario = $sql->imprimir_comentarios($_SESSION['id_pelicula']);
+            $imprimirUsuario = $sql->imprimir_usuario($_SESSION['id_pelicula']);
+
+            foreach ($imprimirComentario as $coment){
+
+            ?>
+            <ul class="com">
+
+                <?php
+                for($i = 0; $i < 1; $i++) {
+                    echo $imprimirUsuario[$i]->getUsuario();
+                }
+                    echo ": &nbsp&nbsp ";
+                    echo $coment->getComentario();
+                ?>
+            </ul>
+
+            <?php
+            } ?>
+        </li>
+
+    </div>
+    <?php
+
+} ?>
 </body>
 </html>

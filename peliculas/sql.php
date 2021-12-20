@@ -3,6 +3,9 @@
 include_once "principal.php";
 include_once "staff.php";
 include_once "multimedia.php";
+include_once "usuarios.php";
+include_once "comentarios.php";
+include_once "join_user.php";
 
 //Extendemos la clase de mysqli
 class sql extends mysqli{
@@ -127,6 +130,73 @@ class sql extends mysqli{
         return $return;
 
     }
+
+    public function insertar_usuarios($email, $password, $usuario){
+        $sql = "INSERT INTO usuarios (email, password, usuario) VALUES ('".$email."','".$password."','".$usuario."');";
+        $this->default();
+
+
+        if (!mysqli_query($this,$sql)){
+            //Imprimimos el alert
+            echo '<script>alert("Email ya registrado, introduce otro email");
+    //Con esta linea de javascript redireccionamos al usuario en este caso a la misma pagina. 
+            location.href="http://localhost/html/SJimenez/PhpSQL/peliculas/formulario_register.php?loggin=Entra+YA%21";
+                    </script>';
+        }
+        $this->close();
+    }
+
+    public function usuario_logeado($usuario)
+    {
+        $sql = "SELECT * FROM usuarios where email='".$usuario."';";
+        $this->default();
+        $query = $this->query($sql);
+        $resultado = $query->fetch_assoc();//hacemos que sea una array asociativa
+        $this->close();
+        $return = new usuarios($resultado['id'], $resultado['email'], $resultado['password'], $resultado['usuario']);
+        return $return;
+
+    }
+
+    public function insertar_comentario($id_pelicula, $id_usuario, $comentario)
+    {
+        $sql = "INSERT INTO comentarios (idUsuario, idPelicula, comentario) VALUES (".$id_usuario.",".$id_pelicula.",'".$comentario."');";
+        $this->default();
+        $query = $this->query($sql);
+        $resultado = $query->fetch_assoc();
+        $this->close();
+        $return = new comentarios($resultado['id'], $resultado['idUsuario'], $resultado['idPelicula'],$resultado['comentario']);
+        return $return;
+    }
+
+    public function imprimir_comentarios($id){
+        $sql = "SELECT * FROM comentarios WHERE idPelicula =".$id.";";
+        $this->default();
+        $query = $this->query($sql);
+        $this->close();
+        $return = Array();
+
+        while($resultado = $query->fetch_assoc()) {//hacemos que sea una array asociativa
+
+            $return[] = new comentarios($resultado['id'],$resultado['idUsuario'],$resultado['idPelicula'],$resultado['comentario']);
+        }
+        return $return;
+
+    }
+
+    public function imprimir_usuario($id){
+        $sql = "SELECT u.usuario FROM comentarios c INNER JOIN usuarios u ON (c.idUsuario = u.id) WHERE idPelicula =".$id.";";
+        $this->default();
+        $query = $this->query($sql);
+        $this->close();//cerramos conexion
+        $return = Array();
+        while($resultado = $query->fetch_assoc()) {//hacemos que sea una array asociativa
+            $return[] = new join_user($resultado['usuario']);
+        }
+        return $return;
+
+    }
+
 }
 
 

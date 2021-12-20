@@ -35,7 +35,7 @@ $dbo = new sql();
         .mb-4{
             width: 300px;
             height: auto;
-            margin: 35px;
+            margin:20px;
 
         }
         .estrella{
@@ -81,6 +81,25 @@ $dbo = new sql();
             height: 35px;
         }
 
+        .loggin_register{
+            position: absolute;
+            margin-top: 10px;
+            margin-left: 15%;
+        }
+        .cerrar{
+            background-color: white;
+            height: 30px;
+            width: 150px;
+            position: absolute;
+            top: 40px;
+            left: 1%;
+            border: #111111 solid 3px;
+        }
+        .cerrado:link, .cerrado:visited,.cerrado:active{
+            text-decoration: none;
+            color: black;
+
+        }
 
     </style>
 </head>
@@ -88,18 +107,25 @@ $dbo = new sql();
 <body>
 
 <div class="cabecera">
+    <div class="loggin_register">
+        <form action="formulario_register.php" method="get">
+            <input type="submit" name="loggin" value="Entra YA!">
+        </form>
+    </div>
     <div class="buscadorazo">
-    <form action="main.php" method="get">
-        <input class="buscador" type="text" name="busqueda">
-        <input type="submit" name="enviar" value="Buscar">
-    </form>
+        <form action="main.php" method="get">
+            <input class="buscador" type="text" name="busqueda">
+            <input type="submit" name="enviar" value="Buscar">
+        </form>
         <?php
+
+
         if(isset($_GET['enviar'])){
             $busqueda = $_GET['busqueda'];
 
             $principales = $dbo->getPeliBusqueda($busqueda);
         }else{
-           $principales = $dbo->getprincipal();
+            $principales = $dbo->getprincipal();
         }
         ?>
     </div>
@@ -124,38 +150,49 @@ $dbo = new sql();
         }
         ?>
     </div>
-    <h1 class="h1">Ifinity Movies Dont Be Moved</h1>
+    <div class="cerrar">
+        <a class="cerrado" href="cerrar.php">Cerrar Sesion</a>
+    </div>
+    <h1 class="h1">Ifinity Movies Dont Be Moved <?php
+        session_start();//Entramos en la sesion
+        if($_SESSION['logeado']){
+            echo "/// Estas Logeado";
+        }else{
+            echo "/// NO estas Logeado";
+        } ?>
+    </h1>
+
 </div>
 
 
-        <div class="col-md-4 ">
-            <?php foreach ($principales as $principal){ ?>
+<div class="col-md-4 ">
+    <?php foreach ($principales as $principal){ ?>
 
-            <div class="card mb-4 box-shadow bg-light">
+        <div class="card mb-4 box-shadow bg-light">
 
-                <a href="paginaextendida.php?id=<?php echo $principal->getIdMultimedia()->getId(); ?>"><img class="card-img-top" src="<?php echo $principal->getIdMultimedia()->getUrl()?>" alt="imagen"></a>
-                <div
+            <a href="paginaextendida.php?id=<?php echo $principal->getIdMultimedia()->getId(); ?>"><img class="card-img-top" src="<?php echo $principal->getIdMultimedia()->getUrl()?>" alt="imagen"></a>
+            <div
                     class="card-body">
-                    <h5 class="card-title"><?php echo $principal->getTitulo()?></h5>
-                    <hr style="height: 5px">
-                        <div class="mb-3" style="margin-bottom:0!important;"><label for="exampleInputEmail1" class="form-label" style="margin-bottom: 0;"><strong>Genero:</strong></label>
-                            <div id="emailHelp" class="form-text" style="margin-top:0;"><?php echo $principal->getGenero()?></div>
-                        </div>
-                        <div class="mb-3"><label for="exampleInputEmail1" class="form-label" style="margin-bottom: 0;"><strong>Puntuacion:</strong></label><div id="emailHelp" class="form-text" style="margin-top:0"></div>
-                            <div id="emailHelp" class="form-text" style="margin-top:0;"><?php echo $principal->getPuntuacion()?><?php if($principal->getPuntuacion() <= 5){
-                                echo '<img class="estrella" src="img/rojo.png">';
-                                }else{echo '<img class="estrella" src="img/pngegg.png">';}?></div>
-                        </div>
-                        <div class="descripcion"><strong>Descripcion</strong>
-                        <div id="descripcionentera" class="form-text" style="margin-top:0;"><?php echo $principal->getDescripcion()?></div>
-                        </div>
+                <h5 class="card-title"><?php echo $principal->getTitulo()?></h5>
+                <hr style="height: 5px">
+                <div class="mb-3" style="margin-bottom:0!important;"><label for="exampleInputEmail1" class="form-label" style="margin-bottom: 0;"><strong>Genero:</strong></label>
+                    <div id="emailHelp" class="form-text" style="margin-top:0;"><?php echo $principal->getGenero()?></div>
                 </div>
-
+                <div class="mb-3"><label for="exampleInputEmail1" class="form-label" style="margin-bottom: 0;"><strong>Puntuacion:</strong></label><div id="emailHelp" class="form-text" style="margin-top:0"></div>
+                    <div id="emailHelp" class="form-text" style="margin-top:0;"><?php echo $principal->getPuntuacion()?><?php if($principal->getPuntuacion() <= 5){
+                            echo '<img class="estrella" src="img/rojo.png">';
+                        }else{echo '<img class="estrella" src="img/pngegg.png">';}?></div>
+                </div>
+                <div class="descripcion"><strong>Descripcion</strong>
+                    <div id="descripcionentera" class="form-text" style="margin-top:0;"><?php echo $principal->getDescripcion()?></div>
+                </div>
             </div>
 
-            <?php } ?>
-
         </div>
+
+    <?php } ?>
+
+</div>
 
 
 
